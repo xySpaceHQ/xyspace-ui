@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
-    "declaration": true,
-    "outDir": "dist",
-    "module": "ESNext",
     "target": "ESNext",
+    "module": "ESNext",
     "jsx": "react-jsx",
-    "strict": true
+    "strict": true,
+    "declaration": false,
+    "emitDeclarationOnly": false
   }
 }
