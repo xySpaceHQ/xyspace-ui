@@ -30,7 +30,21 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { LayoutGrid, LayoutList } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  LayoutGrid,
+  LayoutList,
+  ChevronsLeft,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsRight,
+} from "lucide-react";
 import { Skeleton } from "../ui/skeleton";
 
 interface DataTableProps<TData, TValue> {
@@ -44,10 +58,16 @@ interface DataTableProps<TData, TValue> {
   manualPagination?: boolean;
   // Grid view props
   enableGridView?: boolean;
+  viewMode?: "table" | "grid";
+  onViewModeChange?: React.Dispatch<React.SetStateAction<"table" | "grid">>;
   gridColumns?: number;
   renderGridCard?: (row: Row<TData>) => React.ReactNode;
   // Loading state
   isLoading?: boolean;
+  // Pagination UI options
+  pageSizeOptions?: number[];
+  showSelectedCount?: boolean;
+
 }
 
 export function DataTable<TData, TValue>({
@@ -59,9 +79,13 @@ export function DataTable<TData, TValue>({
   onPaginationChange,
   manualPagination = false,
   enableGridView = false,
+  viewMode: controlledViewMode,
+  onViewModeChange,
   gridColumns = 3,
   renderGridCard,
   isLoading = false,
+  pageSizeOptions = [10, 20, 30, 40, 50],
+  showSelectedCount = false,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -70,13 +94,18 @@ export function DataTable<TData, TValue>({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
-  const [viewMode, setViewMode] = React.useState<"table" | "grid">("table");
+  const [internalViewMode, setInternalViewMode] = React.useState<
+    "table" | "grid"
+  >("table");
+
+  const viewMode = controlledViewMode ?? internalViewMode;
+  const setViewMode = onViewModeChange ?? setInternalViewMode;
 
   // Internal pagination state (only used when not manual)
   const [internalPagination, setInternalPagination] =
     React.useState<PaginationState>({
       pageIndex: 0,
-      pageSize: 10,
+      pageSize: pageSizeOptions[0] ?? 10,
     });
 
   const table = useReactTable({
@@ -101,6 +130,10 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     manualPagination: manualPagination,
   });
+
+  const currentPageIndex = table.getState().pagination.pageIndex;
+  const currentPageSize = table.getState().pagination.pageSize;
+  const totalPageCount = table.getPageCount();
 
   return (
     <div className="space-y-4">
@@ -133,9 +166,9 @@ export function DataTable<TData, TValue>({
         </div>
 
         {enableGridView && (
-          <div className="flex items-center gap-1 border rounded-md">
+          <div className="flex items-center border-gray-100 border shadow-xs rounded-md">
             <Button
-              variant={viewMode === "table" ? "secondary" : "ghost"}
+              variant={viewMode === "table" ? "default" : "ghost"}
               size="sm"
               onClick={() => setViewMode("table")}
               className="rounded-r-none"
@@ -143,7 +176,7 @@ export function DataTable<TData, TValue>({
               <LayoutList className="h-4 w-4" />
             </Button>
             <Button
-              variant={viewMode === "grid" ? "secondary" : "ghost"}
+              variant={viewMode === "grid" ? "default" : "ghost"}
               size="sm"
               onClick={() => setViewMode("grid")}
               className="rounded-l-none"
@@ -164,7 +197,7 @@ export function DataTable<TData, TValue>({
                   {headerGroup.headers.map((header) => (
                     <TableHead
                       key={header.id}
-                      className="cursor-pointer select-none"
+                      className="cursor-pointer select-none px-2"
                       onClick={header.column.getToggleSortingHandler()}
                     >
                       {flexRender(
@@ -198,10 +231,10 @@ export function DataTable<TData, TValue>({
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
-                    className="hover:bg-muted/50"
+                    className="hover:bg-muted/50 h-15 "
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
+                      <TableCell key={cell.id} className="px-2">
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext(),
@@ -290,28 +323,79 @@ export function DataTable<TData, TValue>({
       )}
 
       {/* Pagination */}
-      <div className="flex items-center justify-between">
-        <div className="text-sm text-muted-foreground">
-          Page {table.getState().pagination.pageIndex + 1}
-          {pageCount ? ` of ${pageCount}` : ""}
+      <div className="flex items-center justify-between px-2">
+        <div className="flex-1 text-sm text-muted-foreground">
+          {showSelectedCount
+            ? `${table.getFilteredSelectedRowModel().rows.length} of ${
+                table.getFilteredRowModel().rows.length
+              } row(s) selected.`
+            : null}
         </div>
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
+
+        <div className="flex items-center space-x-6 lg:space-x-8">
+          <div className="flex items-center space-x-2">
+            <p className="text-sm font-medium">Rows per page</p>
+            <Select
+              value={`${currentPageSize}`}
+              onValueChange={(value) => {
+                table.setPageSize(Number(value));
+              }}
+            >
+              <SelectTrigger className="h-8 w-[70px]">
+                <SelectValue placeholder={currentPageSize} />
+              </SelectTrigger>
+              <SelectContent side="top">
+                {pageSizeOptions.map((size) => (
+                  <SelectItem key={size} value={`${size}`}>
+                    {size}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+            Page {currentPageIndex + 1} of {Math.max(totalPageCount, 1)}
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              className="hidden h-8 w-8 p-0 lg:flex"
+              onClick={() => table.setPageIndex(0)}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <span className="sr-only">Go to first page</span>
+              <ChevronsLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              className="h-8 w-8 p-0"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <span className="sr-only">Go to previous page</span>
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              className="h-8 w-8 p-0"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              <span className="sr-only">Go to next page</span>
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              className="hidden h-8 w-8 p-0 lg:flex"
+              onClick={() => table.setPageIndex(totalPageCount - 1)}
+              disabled={!table.getCanNextPage()}
+            >
+              <span className="sr-only">Go to last page</span>
+              <ChevronsRight className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
     </div>

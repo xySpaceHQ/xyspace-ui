@@ -2,9 +2,13 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
+    "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "strict": true,
     "declaration": false,
-    "emitDeclarationOnly": false
+    "emitDeclarationOnly": false,
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   }
 }
