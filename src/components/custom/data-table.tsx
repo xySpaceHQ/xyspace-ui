@@ -46,6 +46,7 @@ import {
   ChevronsRight,
 } from "lucide-react";
 import { Skeleton } from "../ui/skeleton";
+import { cn } from "@/lib/utils";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -67,6 +68,7 @@ interface DataTableProps<TData, TValue> {
   // Pagination UI options
   pageSizeOptions?: number[];
   showSelectedCount?: boolean;
+  gridViewClassName?: string; // Optional className for grid view container
 
 }
 
@@ -86,6 +88,7 @@ export function DataTable<TData, TValue>({
   isLoading = false,
   pageSizeOptions = [10, 20, 30, 40, 50],
   showSelectedCount = false,
+  gridViewClassName,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -261,7 +264,9 @@ export function DataTable<TData, TValue>({
       {/* Grid View */}
       {viewMode === "grid" && (
         <div
-          className={`grid gap-4`}
+          className={cn("grid gap-4",
+            gridViewClassName
+          )}
           style={{
             gridTemplateColumns: `repeat(${gridColumns}, minmax(0, 1fr))`,
           }}
