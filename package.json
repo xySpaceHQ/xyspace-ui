@@ -35,7 +35,8 @@
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run",
 		"storybook": "storybook dev -p 6006",
-		"build-storybook": "storybook build"
+		"build-storybook": "storybook build",
+		"chromatic": "chromatic --exit-zero-on-changes"
 	},
 	"devDependencies": {
 		"@chromatic-com/storybook": "latest",
@@ -52,6 +53,7 @@
 		"@vitest/browser-playwright": "latest",
 		"@vitest/coverage-v8": "latest",
 		"autoprefixer": "^10.5.4",
+		"chromatic": "^18.1.0",
 		"playwright": "latest",
 		"postcss": "^8.5.26",
 		"publint": "^0.3.23",

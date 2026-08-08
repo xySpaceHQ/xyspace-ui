@@ -78,6 +78,9 @@ importers:
       autoprefixer:
         specifier: ^10.5.4
         version: 10.5.4(postcss@8.5.26)
+      chromatic:
+        specifier: ^18.1.0
+        version: 18.1.0
       playwright:
         specifier: latest
         version: 1.62.1
