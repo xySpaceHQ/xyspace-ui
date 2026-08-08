@@ -29,7 +29,15 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - name: Publish Storybook preview to Chromatic
+        id: chromatic
         uses: chromaui/action@latest
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           exitZeroOnChanges: true
+
+      - name: Comment preview link on PR
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: storybook-preview
+          message: |
+            📖 **Storybook preview:** ${{ steps.chromatic.outputs.storybookUrl }}
