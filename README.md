@@ -1,13 +1,43 @@
-# xyspace-ui
+<p align="center">
+  <img src="https://img.shields.io/badge/xyspace--ui-React%20Component%20Library-blue?style=for-the-badge&logo=react&logoColor=white" alt="xyspace-ui"/>
+</p>
 
-A React component library built with Tailwind CSS v4, Radix UI, and class-variance-authority. Ships as ESM + CJS with full TypeScript declarations.
+<h1 align="center">🎨 xyspace-ui</h1>
+
+<p align="center">
+  <strong>xySpace's shared React component library</strong>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/npm/v/xyspace-ui?style=flat-square&color=CB3837&logo=npm&logoColor=white" alt="npm version"/>
+  <img src="https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black" alt="React"/>
+  <img src="https://img.shields.io/badge/Radix%20UI-161618?style=flat-square&logo=radixui&logoColor=white" alt="Radix UI"/>
+  <img src="https://img.shields.io/badge/Tailwind%20CSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind CSS"/>
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript"/>
+  <img src="https://img.shields.io/badge/Storybook-FF4785?style=flat-square&logo=storybook&logoColor=white" alt="Storybook"/>
+</p>
+
+<p align="center">
+  <a href="#requirements">Requirements</a> •
+  <a href="#getting-started">Getting Started</a> •
+  <a href="#project-structure">Structure</a> •
+  <a href="#testing">Testing</a> •
+  <a href="#publishing">Publishing</a> •
+  <a href="#contributing">Contributing</a>
+</p>
+
+---
+
+xySpace's React component library is a set of shared, reusable UI components built with React, Radix UI, and Tailwind CSS. It's distributed as [`xyspace-ui`](https://www.npmjs.com/package/xyspace-ui) on npm, shipped as ESM + CJS with full TypeScript declarations.
 
 ## Requirements
 
 - React 19+ and React DOM 19+ (peer dependencies)
 - Tailwind CSS v4 in the consuming app (components are styled with Tailwind utility classes and design-token CSS variables)
 
-## Installation
+## Getting Started
+
+### Installation
 
 ```bash
 npm install xyspace-ui
@@ -17,7 +47,7 @@ pnpm add xyspace-ui
 yarn add xyspace-ui
 ```
 
-## Usage
+### Usage
 
 Import components directly from the package root:
 
@@ -31,25 +61,25 @@ function App() {
 
 Available exports include `Button`, `Avatar`, `Chips`, `DropdownMenu`, `Select`, `Skeleton`, `Table`, `Tab`, `AppTab`, and `DataTable`. See [src/index.ts](src/index.ts) for the full list.
 
-## Setting up a consuming project
+### Setting up a consuming project
 
 The components rely on Tailwind CSS utility classes and a set of CSS custom properties (design tokens) for colors, spacing, radii, and typography. Since this package ships no compiled CSS, your app needs Tailwind v4 configured and the token variables defined.
 
-### 1. Create/scaffold your app
+#### 1. Create/scaffold your app
 
 ```bash
 npm create vite@latest my-app -- --template react-ts
 cd my-app
 ```
 
-### 2. Install Tailwind CSS v4 and the package
+#### 2. Install Tailwind CSS v4 and the package
 
 ```bash
 npm install tailwindcss @tailwindcss/vite tw-animate-css
 npm install xyspace-ui
 ```
 
-### 3. Wire up the Tailwind Vite plugin
+#### 3. Wire up the Tailwind Vite plugin
 
 ```ts
 // vite.config.ts
@@ -62,7 +92,7 @@ export default defineConfig({
 });
 ```
 
-### 4. Add a global stylesheet with Tailwind + design tokens
+#### 4. Add a global stylesheet with Tailwind + design tokens
 
 Create `src/index.css` and import Tailwind plus the token bridge. Copy the `@theme inline` block and the `:root` / `.dark` token definitions from [.storybook/theme.css](.storybook/theme.css) in this repo — this maps semantic classes used by the components (e.g. `bg-btn-primary`, `text-display-01`, `rounded-8`) to real values:
 
@@ -93,7 +123,7 @@ Then import it once in your app entry point:
 import "./index.css";
 ```
 
-### 5. Use components
+#### 5. Use components
 
 ```tsx
 import { Button, Chips, Avatar } from "xyspace-ui";
@@ -111,7 +141,7 @@ export default function App() {
 }
 ```
 
-### 6. Toggle dark mode (optional)
+#### 6. Toggle dark mode (optional)
 
 Add/remove the `dark` class on a parent element (commonly `<html>` or `<body>`) to switch themes:
 
@@ -119,7 +149,7 @@ Add/remove the `dark` class on a parent element (commonly `<html>` or `<body>`) 
 document.documentElement.classList.toggle("dark");
 ```
 
-## Local development (contributing to this package)
+## Project Structure
 
 ```bash
 pnpm install       # install dependencies
@@ -136,6 +166,15 @@ Each component has a co-located `*.stories.tsx` file used by Storybook.
 
 New components should be exported from [src/index.ts](src/index.ts) to be part of the public API.
 
+## Testing
+
+```bash
+pnpm test          # run the vitest suite
+pnpm typecheck     # type-check the project with tsc --noEmit
+```
+
+Tests run against [vitest.config.ts](vitest.config.ts) with the Playwright browser provider. Add tests alongside the component or logic they cover.
+
 ## Publishing
 
 ```bash
@@ -144,3 +183,7 @@ npm publish
 ```
 
 The `files` field in `package.json` restricts the published package to the `dist/` folder.
+
+## Contributing
+
+Contributions are welcome. Please open a pull request with a clear description of the change, and make sure `pnpm typecheck` and `pnpm test` pass before requesting review.
