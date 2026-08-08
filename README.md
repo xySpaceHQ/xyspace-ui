@@ -170,14 +170,6 @@ New components should be exported from [src/index.ts](src/index.ts) to be part o
 
 Every pull request gets an automatic Storybook preview via [Chromatic](https://www.chromatic.com/), published by [.github/workflows/chromatic.yml](.github/workflows/chromatic.yml). Chromatic posts a check on the PR with a link to the hosted preview, so reviewers can view component changes before merging into main.
 
-This requires a `CHROMATIC_PROJECT_TOKEN` secret configured in the repo (Settings → Secrets and variables → Actions), obtained from your project on [chromatic.com](https://www.chromatic.com/). You can also run a preview build locally with:
-
-```bash
-pnpm chromatic
-```
-
-Merges to `main` continue to publish the canonical Storybook to GitHub Pages via [.github/workflows/storybook-pages.yml](.github/workflows/storybook-pages.yml).
-
 ## Testing
 
 ```bash
