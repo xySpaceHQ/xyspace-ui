@@ -6,6 +6,10 @@
 	"engines": {
 		"node": ">=22"
 	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/xySpaceHQ/xyspace-ui.git"
+	},
 	"main": "dist/index.cjs",
 	"module": "dist/index.mjs",
 	"types": "dist/index.d.mts",
