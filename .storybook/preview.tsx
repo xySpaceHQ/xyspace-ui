@@ -1,13 +1,15 @@
-import type { Preview } from '@storybook/react-vite'
+import type { Preview } from "@storybook/react-vite";
+import { withThemeByClassName } from '@storybook/addon-themes'
 
-import './theme.css'
+import "./theme.css";
 
 const preview: Preview = {
+  tags: ["autodocs"],
   parameters: {
     controls: {
       matchers: {
-       color: /(background|color)$/i,
-       date: /Date$/i,
+        color: /(background|color)$/i,
+        date: /Date$/i,
       },
     },
 
@@ -15,9 +17,18 @@ const preview: Preview = {
       // 'todo' - show a11y violations in the test UI only
       // 'error' - fail CI on a11y violations
       // 'off' - skip a11y checks entirely
-      test: 'todo'
-    }
+      test: "todo",
+    },
   },
+  decorators: [
+    withThemeByClassName({
+      themes: {
+        light: '',
+        dark: 'dark',
+      },
+      defaultTheme: 'light',
+    }),
+  ],
 };
 
 export default preview;
