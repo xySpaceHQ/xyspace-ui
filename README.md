@@ -61,6 +61,18 @@ function App() {
 
 Available exports include `Button`, `Avatar`, `Chips`, `DropdownMenu`, `Select`, `Skeleton`, `Table`, `Tab`, `AppTab`, and `DataTable`. See [src/index.ts](src/index.ts) for the full list.
 
+Icons are available too, imported the same way:
+
+```tsx
+import { GpsFix, Plus, Minus } from "xyspace-ui";
+
+function App() {
+  return <Plus />;
+}
+```
+
+See [src/icons](src/icons) for the full list of available icons.
+
 ### Setting up a consuming project
 
 The components rely on Tailwind CSS utility classes and a set of CSS custom properties (design tokens) for colors, spacing, radii, and typography. Since this package ships no compiled CSS, your app needs Tailwind v4 configured and the token variables defined.
@@ -162,9 +174,11 @@ Component source lives in [src/components](src/components):
 - `src/components/ui` — base primitives (Button, Select, Table, Tab, Avatar, Chips, Skeleton, DropdownMenu)
 - `src/components/custom` — composed components (DataTable, AppTab)
 
+Icon source lives in [src/icons](src/icons).
+
 Each component has a co-located `*.stories.tsx` file used by Storybook.
 
-New components should be exported from [src/index.ts](src/index.ts) to be part of the public API.
+New components and icons should be exported from [src/index.ts](src/index.ts) to be part of the public API.
 
 ### Storybook PR previews
 

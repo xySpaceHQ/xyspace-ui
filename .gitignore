@@ -3,3 +3,4 @@ dist/
 *.tgz
 *storybook.log
 storybook-static
+src/components/ui/maplibre-gl-worker.mjs
