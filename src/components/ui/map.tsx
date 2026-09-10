@@ -1049,13 +1049,13 @@ function BaseMapControl() {
           current.title === "Blank" && "border-border-04",
         )}
         render={
-          <div>
+          <button type="button">
             <img
               src={current.thumbnail}
               alt="Basemap style"
               className=" h-full w-full rounded-8 object-cover"
             />
-          </div>
+          </button>
         }
       />
       <PopoverContent
