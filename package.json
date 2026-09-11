@@ -1,6 +1,6 @@
 {
 	"name": "xyspace-ui",
-	"version": "0.2.2",
+	"version": "0.2.3",
 	"type": "module",
 	"packageManager": "pnpm@10.27.0",
 	"engines": {
@@ -37,12 +37,14 @@
 				"types": "./dist/icons/index.d.cts",
 				"default": "./dist/icons/index.cjs"
 			}
-		}
+		},
+		"./style.css": "./dist/style.css"
 	},
 	"scripts": {
 		"prepare": "node scripts/copy-maplibre-worker.mjs",
+		"prebuild": "rm -rf dist && node scripts/build-css.mjs",
 		"build": "tsdown",
-		"postbuild": "node scripts/copy-maplibre-worker.mjs dist",
+		"postbuild": "node scripts/copy-maplibre-worker.mjs dist && node scripts/inject-css-import.mjs",
 		"dev": "tsdown --watch",
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run",
@@ -67,6 +69,7 @@
 		"@storybook/addon-themes": "^10.6.0",
 		"@storybook/addon-vitest": "^10.6.0",
 		"@storybook/react-vite": "^10.6.0",
+		"@tailwindcss/cli": "^4.3.3",
 		"@tailwindcss/vite": "^4.3.3",
 		"@types/d3-scale": "4.0.9",
 		"@types/geojson": "7946.0.16",

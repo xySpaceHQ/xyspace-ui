@@ -1,23 +1,24 @@
 import { type SVGProps } from "react";
 
-const Minus = (props: SVGProps<SVGSVGElement>) => {
+const X = (props: SVGProps<SVGSVGElement>) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
+      width="13"
+      height="13"
       fill="none"
-      viewBox="0 0 16 16"
+      viewBox="0 0 13 13"
       {...props}
     >
       <path
         stroke="currentColor"
-        d="M2.5 8h11"
+        d="M9.615 2.692 2.692 9.615m6.923 0L2.692 2.692"
         strokeLinecap="round"
         strokeLinejoin="round"
+        strokeWidth=".667"
       />
     </svg>
   );
 };
 
-export default Minus;
+export default X;

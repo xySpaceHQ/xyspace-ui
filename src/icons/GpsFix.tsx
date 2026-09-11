@@ -11,7 +11,7 @@ const GpsFix = (props: SVGProps<SVGSVGElement>) => {
       {...props}
     >
       <g
-        stroke="#656972"
+        stroke="currentColor"
         clipPath="url(#a)"
         strokeLinecap="round"
         strokeLinejoin="round"

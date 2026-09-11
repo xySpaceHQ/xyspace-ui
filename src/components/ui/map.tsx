@@ -223,6 +223,8 @@ type MapContextValue = {
   map: MapLibreGL.Map | null;
   isLoaded: boolean;
   resolvedTheme: Theme;
+  basemap: BaseMapStyleKey | undefined;
+  setBasemap: (key: BaseMapStyleKey) => void;
 };
 
 const MapContext = createContext<MapContextValue | null>(null);
@@ -274,6 +276,17 @@ type MapProps = {
    * Ignored when an explicit `styles` prop is provided.
    */
   blank?: boolean;
+  /**
+   * Selects one of the built-in basemap styles ("dark" | "light" | "street" |
+   * "satellite" | "blank"), overriding `styles`/`blank`/theme-based defaults.
+   * Pass together with `onBasemapChange` to control the active basemap from
+   * outside (e.g. from your own app state) — updates anytime the prop changes.
+   * Uncontrolled (defaults to the resolved theme) if omitted; the built-in
+   * `<BaseMapControl>` picker still works uncontrolled in that case.
+   */
+  basemap?: BaseMapStyleKey;
+  /** Callback fired when the basemap changes, including via the built-in picker. */
+  onBasemapChange?: (basemap: BaseMapStyleKey) => void;
   /** Map projection type. Use `{ type: "globe" }` for 3D globe view. */
   projection?: MapLibreGL.ProjectionSpecification;
   /**
@@ -343,6 +356,8 @@ const Map = forwardRef<MapRef, MapProps>(function Map(
     theme: themeProp,
     styles,
     blank = false,
+    basemap: basemapProp,
+    onBasemapChange,
     projection,
     viewport,
     onViewportChange,
@@ -362,22 +377,46 @@ const Map = forwardRef<MapRef, MapProps>(function Map(
 
   const stableStyles = useStableValue(styles);
 
-  const mapStyles = useMemo(() => {
-    // Explicit styles win. Otherwise `blank` opts into the transparent
-    // tile-less basemap; with neither, fall back to the Carto defaults.
-    if (stableStyles) {
-      return {
-        dark: stableStyles.dark ?? defaultStyles.dark.url,
-        light: stableStyles.light ?? defaultStyles.light.url,
-      };
-    }
-    if (blank) {
-      return { dark: blankMapStyle, light: blankMapStyle };
-    }
-    return { dark: defaultStyles.dark.url, light: defaultStyles.light.url };
-  }, [stableStyles, blank]);
+  // `basemap` mirrors the `viewport`/`onViewportChange` controlled pattern:
+  // passing both lets a consumer drive the active basemap from their own
+  // state (e.g. a store) and have it update the map on every change. Without
+  // it, the built-in <BaseMapControl> picker still works uncontrolled.
+  const isBasemapControlled =
+    basemapProp !== undefined && onBasemapChange !== undefined;
+  const [internalBasemap, setInternalBasemap] = useState<
+    BaseMapStyleKey | undefined
+  >(basemapProp);
+  const activeBasemap = isBasemapControlled ? basemapProp : internalBasemap;
 
-  const mapStyle = resolvedTheme === "dark" ? mapStyles.dark : mapStyles.light;
+  const onBasemapChangeRef = useRef(onBasemapChange);
+  onBasemapChangeRef.current = onBasemapChange;
+
+  const setBasemap = useCallback(
+    (key: BaseMapStyleKey) => {
+      if (!isBasemapControlled) setInternalBasemap(key);
+      onBasemapChangeRef.current?.(key);
+    },
+    [isBasemapControlled],
+  );
+
+  const mapStyle = useMemo(() => {
+    // An explicit basemap selection wins over everything else. Otherwise
+    // explicit `styles` win; then `blank` opts into the transparent
+    // tile-less basemap; with none of those, fall back to the Carto
+    // defaults for the resolved theme.
+    if (activeBasemap) {
+      return defaultStyles[activeBasemap].url;
+    }
+    if (stableStyles) {
+      return resolvedTheme === "dark"
+        ? (stableStyles.dark ?? defaultStyles.dark.url)
+        : (stableStyles.light ?? defaultStyles.light.url);
+    }
+    if (blank) return blankMapStyle;
+    return resolvedTheme === "dark"
+      ? defaultStyles.dark.url
+      : defaultStyles.light.url;
+  }, [activeBasemap, stableStyles, blank, resolvedTheme]);
 
   // Only read once: seeds the camera on construction, matching maplibre-gl's
   // own `initialViewState` semantics (uncontrolled after the first render).
@@ -431,8 +470,14 @@ const Map = forwardRef<MapRef, MapProps>(function Map(
     : undefined;
 
   const contextValue = useMemo(
-    () => ({ map: rawMap, isLoaded, resolvedTheme }),
-    [rawMap, isLoaded, resolvedTheme],
+    () => ({
+      map: rawMap,
+      isLoaded,
+      resolvedTheme,
+      basemap: activeBasemap,
+      setBasemap,
+    }),
+    [rawMap, isLoaded, resolvedTheme, activeBasemap, setBasemap],
   );
 
   return (
@@ -1026,19 +1071,12 @@ const BASE_MAP_OPTIONS: BaseMapStyleKey[] = [
 ];
 
 function BaseMapControl() {
-  const { map, resolvedTheme } = useMap();
-  const [selectedStyle, setSelectedStyle] = useState<BaseMapStyleKey>(
-    resolvedTheme === "dark" ? "dark" : "light",
-  );
-
-  useEffect(() => {
-    setSelectedStyle(resolvedTheme === "dark" ? "dark" : "light");
-  }, [resolvedTheme]);
-
-  useEffect(() => {
-    map?.setStyle(defaultStyles[selectedStyle].url);
-  }, [map, selectedStyle]);
-
+  const { resolvedTheme, basemap, setBasemap } = useMap();
+  // Falls back to the resolved theme until a basemap is explicitly picked
+  // (or set by a consumer via the `basemap` prop) — the map itself applies
+  // the same fallback when computing `mapStyle`, so this only affects which
+  // option the picker highlights.
+  const selectedStyle = basemap ?? (resolvedTheme === "dark" ? "dark" : "light");
   const current = defaultStyles[selectedStyle];
 
   return (
@@ -1074,7 +1112,7 @@ function BaseMapControl() {
                 <button
                   key={key}
                   type="button"
-                  onClick={() => setSelectedStyle(key)}
+                  onClick={() => setBasemap(key)}
                   className={cn(
                     "cursor-pointer transition-all flex w-full items-center gap-2 p-xs rounded-4 hover:bg-surface-level-02",
                     selectedStyle === key && "bg-surface-level-03",

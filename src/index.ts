@@ -1,5 +1,6 @@
 export * from "./components/custom/data-table";
 export * from "./components/custom/app-tab";
+export * from "./components/custom/section-contianer";
 export * from "./components/ui/avatar";
 export * from "./components/ui/button";
 export * from "./components/ui/chips";

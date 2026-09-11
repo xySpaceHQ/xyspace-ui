@@ -11,7 +11,7 @@ const Plus = (props: SVGProps<SVGSVGElement>) => {
       {...props}
     >
       <path
-        stroke="#656972"
+        stroke="currentColor"
         d="M2.5 8h11M8 2.5v11"
         strokeLinecap="round"
         strokeLinejoin="round"

@@ -44,6 +44,8 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronsRight,
+  Columns2,
+  Columns2Icon,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
@@ -70,6 +72,7 @@ interface DataTableProps<TData, TValue> {
   showSelectedCount?: boolean;
   gridViewClassName?: string; // Optional className for grid view container
 
+  tableClassName?: string; // Optional className for table view container
 }
 
 export function DataTable<TData, TValue>({
@@ -89,6 +92,7 @@ export function DataTable<TData, TValue>({
   pageSizeOptions = [10, 20, 30, 40, 50],
   showSelectedCount = false,
   gridViewClassName,
+  tableClassName,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -139,14 +143,16 @@ export function DataTable<TData, TValue>({
   const totalPageCount = table.getPageCount();
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-1">
       {/* Toolbar */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           {showColumnVisibility && viewMode === "table" && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline">Columns</Button>
+                <Button variant="outline" className="text-xs">
+                  <Columns2Icon className="mr-2 h-4 w-4" />
+                </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 {table
@@ -159,8 +165,9 @@ export function DataTable<TData, TValue>({
                       onCheckedChange={(value) =>
                         column.toggleVisibility(!!value)
                       }
+                      className="capitalize text-xs"
                     >
-                      {column.id}
+                      {column.id.replace(/_/g, " ")}
                     </DropdownMenuCheckboxItem>
                   ))}
               </DropdownMenuContent>
@@ -192,21 +199,34 @@ export function DataTable<TData, TValue>({
 
       {/* Table View */}
       {viewMode === "table" && (
-        <div className="rounded-md border overflow-hidden">
+        <div
+          className={cn(
+            "rounded-md border-x border-b overflow-hidden",
+            tableClassName,
+          )}
+        >
           <Table>
-            <TableHeader className="bg-muted">
+            <TableHeader className="bg-surface-level-01">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
+                  {headerGroup.headers.map((header, index) => (
                     <TableHead
                       key={header.id}
-                      className="cursor-pointer select-none px-2"
+                      className={cn(
+                        "cursor-pointer select-none px-2 capitalize border-y border-border-01 text-body font-medium text-xs",
+                        index === 0 ? "border-l-0" : "border-l",
+                        index === headerGroup.headers.length - 1
+                          ? "border-r-0"
+                          : "border-r",
+                      )}
                       onClick={header.column.getToggleSortingHandler()}
                     >
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
+                      {typeof header.column.columnDef.header === "string"
+                        ? header.column.columnDef.header.replace(/_/g, " ")
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
                       {{
                         asc: " ↑",
                         desc: " ↓",
@@ -237,7 +257,10 @@ export function DataTable<TData, TValue>({
                     className="hover:bg-muted/50 h-15 "
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className="px-2">
+                      <TableCell
+                        key={cell.id}
+                        className="px-2 text-subtext-01 text-xs capitalize"
+                      >
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext(),
@@ -264,9 +287,7 @@ export function DataTable<TData, TValue>({
       {/* Grid View */}
       {viewMode === "grid" && (
         <div
-          className={cn("grid gap-4",
-            gridViewClassName
-          )}
+          className={cn("grid gap-4", gridViewClassName)}
           style={{
             gridTemplateColumns: `repeat(${gridColumns}, minmax(0, 1fr))`,
           }}
@@ -303,7 +324,7 @@ export function DataTable<TData, TValue>({
                         <div key={cell.id} className="mb-2 last:mb-0">
                           <div className="text-sm font-medium text-muted-foreground">
                             {typeof column.header === "string"
-                              ? column.header
+                              ? column.header.replace(/_/g, " ")
                               : column.id}
                           </div>
                           <div className="text-sm">
