@@ -7,9 +7,20 @@
 // no explicit @source needed.
 //
 // Runs as "prebuild" (before tsdown) rather than "postbuild" so the file
-// exists in time for tsdown's own publint exports check. See
-// inject-css-import.mjs for the other half — wiring the compiled file into
-// the built JS entry points.
+// exists in time for tsdown's own publint exports check.
+//
+// dist/style.css is NOT wired into the JS entry points as a side-effect
+// import. A consumer's bundler that splits vendor CSS into its own chunk
+// (Turbopack does this for node_modules) would load it as a separate
+// stylesheet from the consumer's own Tailwind build; same-named CSS cascade
+// layers (e.g. "utilities") merge across stylesheets in load order, so our
+// compiled utilities can end up shadowing the consumer's own responsive
+// overrides for any class we both happen to generate (e.g. `.hidden`
+// winning over their `.md:flex`) with no way for them to opt out short of
+// not using components at all. Consumers should follow the README instead:
+// copy the token bridge and let their own Tailwind build's automatic source
+// detection (or an explicit @source) pick up class names straight from this
+// package's dist output, in one unified compilation.
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";

@@ -44,7 +44,7 @@
 		"prepare": "node scripts/copy-maplibre-worker.mjs",
 		"prebuild": "rm -rf dist && node scripts/build-css.mjs",
 		"build": "tsdown",
-		"postbuild": "node scripts/copy-maplibre-worker.mjs dist && node scripts/inject-css-import.mjs",
+		"postbuild": "node scripts/copy-maplibre-worker.mjs dist",
 		"dev": "tsdown --watch",
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run",

@@ -1,4 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 @custom-variant dark (&:is(.dark *));
@@ -450,11 +449,11 @@
   --btn-tab-01: var(--grey-700);
 }
 
-html {
-  font-size: var(--font-size-base);
-}
-
 @layer base {
+  html {
+    font-size: var(--font-size-base);
+  }
+
   * {
     @apply border-border-01 outline-none p-0 m-0;
   }

@@ -448,11 +448,11 @@
   --btn-tab-01: var(--grey-700);
 }
 
-html {
-  font-size: var(--font-size-base);
-}
-
 @layer base {
+  html {
+    font-size: var(--font-size-base);
+  }
+
   * {
     @apply border-border-01 outline-none p-0 m-0;
   }

@@ -39,7 +39,6 @@ import {
 } from "@/components/ui/popover";
 
 import { cn } from "@/lib/utils";
-import { Button } from "./button";
 import { GpsFix, Plus, Minus } from "@/icons";
 
 // Registers the `cog://` protocol so `MapRasterLayer`

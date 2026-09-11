@@ -73,6 +73,8 @@ interface DataTableProps<TData, TValue> {
   gridViewClassName?: string; // Optional className for grid view container
 
   tableClassName?: string; // Optional className for table view container
+
+  positionPaginationControls?: "right" | "left";
 }
 
 export function DataTable<TData, TValue>({
@@ -90,6 +92,7 @@ export function DataTable<TData, TValue>({
   renderGridCard,
   isLoading = false,
   pageSizeOptions = [10, 20, 30, 40, 50],
+  positionPaginationControls = "right",
   showSelectedCount = false,
   gridViewClassName,
   tableClassName,
@@ -154,7 +157,10 @@ export function DataTable<TData, TValue>({
                   <Columns2Icon className="mr-2 h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent
+                align="end"
+                className="border border-border-01"
+              >
                 {table
                   .getAllColumns()
                   .filter((column) => column.getCanHide())
@@ -350,7 +356,12 @@ export function DataTable<TData, TValue>({
 
       {/* Pagination */}
       <div className="flex items-center justify-between px-2">
-        <div className="flex-1 text-sm text-muted-foreground">
+        <div
+          className={cn(
+            "flex-1 text-sm text-muted-foreground",
+            positionPaginationControls === "left" && "order-2",
+          )}
+        >
           {showSelectedCount
             ? `${table.getFilteredSelectedRowModel().rows.length} of ${
                 table.getFilteredRowModel().rows.length
@@ -358,7 +369,12 @@ export function DataTable<TData, TValue>({
             : null}
         </div>
 
-        <div className="flex items-center space-x-6 lg:space-x-8">
+        <div
+          className={cn(
+            "flex items-center space-x-6 lg:space-x-8",
+            positionPaginationControls === "left" && "order-1",
+          )}
+        >
           <div className="flex items-center space-x-2">
             <p className="text-sm font-medium">Rows per page</p>
             <Select
