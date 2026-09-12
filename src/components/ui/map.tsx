@@ -845,7 +845,7 @@ function ControlButton({
       aria-label={label}
       type="button"
       disabled={disabled}
-      className={cn("p-1", className)}
+      className={cn("p-1 hover:bg-btn-icon-hover", className)}
     >
       {children}
     </button>
@@ -951,32 +951,32 @@ function MapControls({
             onClick={handleLocate}
             label="Find my location"
             disabled={waitingForLocation}
-            className="p-1 bg-surface-base-01 rounded-full"
+            className="h-9 w-9 flex items-center justify-center bg-surface-base-01 rounded-full `"
           >
             {waitingForLocation ? (
-              <Loader2 className="size-4 animate-spin" />
+              <Loader2 className="size-4.5 animate-spin" />
             ) : (
-              <GpsFix className="size-4" />
+              <GpsFix className="size-4.5" />
             )}
           </ControlButton>
         </ControlGroup>
       )}
       {showZoom && (
-        <ControlGroup className="flex rounded-full w-full h-6">
+        <ControlGroup className="flex rounded-full w-full h-9">
           <ControlButton
             onClick={handleZoomIn}
             label="Zoom in"
-            className="p-1 bg-surface-base-01 rounded-l-full"
+            className="h-9 w-9 flex items-center justify-center bg-surface-base-01 rounded-l-full"
           >
-            <Plus className="size-4 " />
+            <Plus className="size-4.5 " />
           </ControlButton>
           <hr className="border-border-02 w-0 self-stretch border-l h-full" />
           <ControlButton
             onClick={handleZoomOut}
             label="Zoom out"
-            className="p-1 bg-surface-base-01 rounded-r-full"
+            className="h-9 w-9 flex items-center justify-center bg-surface-base-01 rounded-r-full"
           >
-            <Minus className="size-4" />
+            <Minus className="size-4.5" />
           </ControlButton>
         </ControlGroup>
       )}
@@ -989,17 +989,17 @@ function MapControls({
         <ControlGroup>
           <ControlButton
             onClick={handlePitchUp}
-            className="p-1 bg-surface-base-01 rounded-full"
+            className="h-9 w-9 flex items-center justify-center bg-surface-base-01 rounded-l-full"
             label="Tilt up"
           >
-            <ChevronUp className="size-4" />
+            <ChevronUp className="size-4.5" />
           </ControlButton>
           <ControlButton
             onClick={handlePitchDown}
-            className="p-1 bg-surface-base-01 rounded-full"
+            className="h-9 w-9 flex items-center justify-center bg-surface-base-01 rounded-full"
             label="Tilt down"
           >
-            <ChevronDown className="size-4" />
+            <ChevronDown className="size-4.5" />
           </ControlButton>
         </ControlGroup>
       )}
@@ -1008,10 +1008,10 @@ function MapControls({
         <ControlGroup>
           <ControlButton
             onClick={handleFullscreen}
-            className="p-1 bg-surface-base-01 rounded-full"
+            className="h-9 w-9 flex items-center justify-center bg-surface-base-01 rounded-full"
             label="Toggle fullscreen"
           >
-            <Maximize className="size-4" />
+            <Maximize className="size-4.5" />
           </ControlButton>
         </ControlGroup>
       )}
@@ -1075,14 +1075,15 @@ function BaseMapControl() {
   // (or set by a consumer via the `basemap` prop) — the map itself applies
   // the same fallback when computing `mapStyle`, so this only affects which
   // option the picker highlights.
-  const selectedStyle = basemap ?? (resolvedTheme === "dark" ? "dark" : "light");
+  const selectedStyle =
+    basemap ?? (resolvedTheme === "dark" ? "dark" : "light");
   const current = defaultStyles[selectedStyle];
 
   return (
     <Popover>
       <PopoverTrigger
         className={cn(
-          "size-6.5 rounded-8 border-[1.4px] border-border-00 cursor-pointer transition-all",
+          "size-9 rounded-8 border-[1.4px] border-border-00 cursor-pointer transition-all",
           current.title === "Blank" && "border-border-04",
         )}
         render={

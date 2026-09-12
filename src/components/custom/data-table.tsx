@@ -65,6 +65,8 @@ interface DataTableProps<TData, TValue> {
   onViewModeChange?: React.Dispatch<React.SetStateAction<"table" | "grid">>;
   gridColumns?: number;
   renderGridCard?: (row: Row<TData>) => React.ReactNode;
+  renderGridSkeleton?: () => React.ReactNode;
+  gridSkeletonCount?: number;
   // Loading state
   isLoading?: boolean;
   // Pagination UI options
@@ -90,6 +92,8 @@ export function DataTable<TData, TValue>({
   onViewModeChange,
   gridColumns = 3,
   renderGridCard,
+  renderGridSkeleton,
+  gridSkeletonCount = 6,
   isLoading = false,
   pageSizeOptions = [10, 20, 30, 40, 50],
   positionPaginationControls = "right",
@@ -300,21 +304,27 @@ export function DataTable<TData, TValue>({
         >
           {isLoading ? (
             // Skeleton loader for grid
-            Array.from({ length: 6 }).map((_, index) => (
-              <div
-                key={index}
-                className="rounded-lg border bg-card p-6 shadow-sm"
-              >
-                <Skeleton className="h-6 w-3/4 mb-4" />
-                <Skeleton className="h-4 w-full mb-2" />
-                <Skeleton className="h-4 w-full mb-2" />
-                <Skeleton className="h-4 w-2/3 mb-4" />
-                <div className="flex gap-2">
-                  <Skeleton className="h-6 w-20" />
-                  <Skeleton className="h-6 w-16" />
+            Array.from({ length: gridSkeletonCount }).map((_, index) =>
+              renderGridSkeleton ? (
+                <React.Fragment key={index}>
+                  {renderGridSkeleton()}
+                </React.Fragment>
+              ) : (
+                <div
+                  key={index}
+                  className="rounded-lg border bg-card p-6 shadow-sm"
+                >
+                  <Skeleton className="h-6 w-3/4 mb-4" />
+                  <Skeleton className="h-4 w-full mb-2" />
+                  <Skeleton className="h-4 w-full mb-2" />
+                  <Skeleton className="h-4 w-2/3 mb-4" />
+                  <div className="flex gap-2">
+                    <Skeleton className="h-6 w-20" />
+                    <Skeleton className="h-6 w-16" />
+                  </div>
                 </div>
-              </div>
-            ))
+              ),
+            )
           ) : table.getRowModel().rows.length ? (
             table.getRowModel().rows.map((row) => (
               <div key={row.id}>

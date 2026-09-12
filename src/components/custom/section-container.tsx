@@ -27,7 +27,7 @@ type SectionContainerProps = {
   collapseButtonProps?: Omit<React.ComponentProps<typeof Button>, "onClick">;
 };
 
-const SectionContainer = ({
+export function SectionContainer({
   children,
   className,
   title,
@@ -48,7 +48,7 @@ const SectionContainer = ({
   collapseIcon,
   expandIcon,
   collapseButtonProps,
-}: SectionContainerProps) => {
+}: SectionContainerProps) {
   const [internalCollapsed, setInternalCollapsed] = useState(defaultCollapsed);
   const isCollapsed = collapsible && (collapsed ?? internalCollapsed);
 
@@ -150,6 +150,4 @@ const SectionContainer = ({
       <div className={cn(contentClassName)}>{children}</div>
     </section>
   );
-};
-
-export default SectionContainer;
+}

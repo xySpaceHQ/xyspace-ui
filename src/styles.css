@@ -48,9 +48,8 @@
   --spacing-xxl: 1.5rem; /* 24px */
   --spacing-xxxl: 2rem; /* 32px */
 
-  /* Shadows */
-  --shadow-4: 0px 2px 24px 0px #282a2e14;
-
+  /* Fonts */
+  --font-inter: var(--font-inter);
 
   --color-xyfield-01: var(--xyfield-01);
   --color-xyfield-02: var(--xyfield-02);
@@ -63,6 +62,8 @@
   --color-surface-level-02: var(--surface-level-02);
   --color-surface-level-03: var(--surface-level-03);
   --color-surface-level-04: var(--surface-level-04);
+  --color-surface-alt-01: var(--surface-alt-01);
+  --color-surface-alt-02: var(--surface-alt-02);
 
   --color-surface-nav-hover: var(--surface-nav-hover);
   --color-surface-inverse: var(--surface-inverse);
@@ -72,6 +73,7 @@
   --color-border-02: var(--border-02);
   --color-border-03: var(--border-03);
   --color-border-04: var(--border-04);
+  --color-border-alt: var(--border-alt);
 
   --color-base-01: var(--base-01);
   --color-base-02: var(--base-02);
@@ -89,6 +91,9 @@
   --color-alt: var(--display-alt);
   --color-alt-1: var(--display-alt-1);
   --color-disabled: var(--base-disabled);
+
+  --color-overlay-01: var(--overlay-01);
+  --color-overlay-02: var(--overlay-02);
 
   --color-icon-default: var(--icon-default);
   --color-icon-active: var(--icon-active);
@@ -144,6 +149,10 @@
   --color-btn-secondary-text-disable: var(--btn-secondary-text-disable);
   --color-btn-secondary-danger: var(--btn-secondary-danger);
   --color-btn-secondary-danger-text: var(--btn-secondary-danger-text);
+  --color-btn-tab-01: var(--btn-tab-01);
+  --color-btn-icon-hover: var(--btn-icon-hover);
+
+  --shadow-4: 0px 2px 24px 0px #282a2e14;
 }
 
 :root {
@@ -246,6 +255,10 @@
   --btn-danger: var(--red-500);
   --btn-danger-text: var(--base-white);
   --btn-tab-01: var(--grey-50);
+  --btn-icon-hover: var(--grey-50);
+
+  --overlay-01: #05050680;
+  --overlay-02: #55555554;
 
   /* base color primitives */
   --base-white: #ffffff;
@@ -363,6 +376,8 @@
   --surface-level-02: var(--grey-850);
   --surface-level-03: var(--grey-800);
   --surface-level-04: var(--grey-700);
+  --surface-alt-01: var(--grey-600);
+  --surface-alt-02: var(--grey-800);
 
   --surface-nav-hover: var(--grey-850);
   --surface-inverse: var(--base-white);
@@ -447,6 +462,11 @@
   --btn-danger: var(--red-100);
   --btn-danger-text: var(--red-950);
   --btn-tab-01: var(--grey-700);
+  --btn-icon-hover: var(--grey-800);
+
+  /*  Overlay */
+  --overlay-01: #05050603;
+  --overlay-02: var(--grey-950);
 }
 
 @layer base {

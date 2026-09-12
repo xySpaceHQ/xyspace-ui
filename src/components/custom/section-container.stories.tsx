@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React, { useState } from "react";
-import SectionContainer from "./section-contianer";
+import { SectionContainer } from "./section-container";
 import { Button } from "../ui/button";
 import Table from "@/icons/Table";
 import Track from "@/icons/Track";

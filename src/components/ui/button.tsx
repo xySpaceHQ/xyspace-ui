@@ -14,18 +14,19 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
         outline:
-          "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground",
+          "border bg-background shadow-xs hover:bg-btn-icon-hover",
         secondary:
           "bg-btn-secondary text-btn-secondary-text hover:bg-btn-secondary-hover focus-visible:ring-border-02 disabled:bg-btn-secondary-disabled disabled:text-btn-secondary-text-disabled",
         tertiary:
           "bg-surface-00 text-btn-secondary-text hover:bg-highlight-grey-25 hover:text-btn-secondary-text",
         text: "bg-base underline-offset-4 hover:underline text-btn-secondary-text",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
+        ghost: "hover:bg-surface-level-01 hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
         default: "h-[2.5rem] px-lg py-l has-[>svg]:px-3",
         sm: "h-[2.125rem] gap-1.5 px-l py-s  has-[>svg]:px-2.5",
+        xs: "h-[1.5rem] gap-1 px-s py-1 has-[>svg]:px-s",
         lg: "h-[3.25rem] p-lg has-[>svg]:px-3",
         icon: "size-9",
         "icon-sm": "size-8",
