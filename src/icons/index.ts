@@ -18,7 +18,22 @@ import LockSimple from "./LockSimple";
 import Database from "./Database";
 import CaretUpDown from "./CaretUpDown";
 import BackgroundVectorUp from "@/vectors/BackgroundVectorUp";
-
+import MapCard from "./MapCard";
+import MapCards from "./MapCards";
+import BackgroundLinesVector from "@/vectors/BackgroundLinesVector";
+import Chat from "./Chat";
+import DotsThree from "./DotsThree";
+import DotsThreeVertical from "./DotsThreeVertical";
+import ArrowUp from "./ArrowUp";
+import SubtractSquare from "./SubtractSquare";
+import Analysis from "./Analysis";
+import ArrowBendUpLeft from "./ArrowBendUpLeft";
+import ArrowBendUpRight from "./ArrowBendUpRight";
+import Eye from "./Eye";
+import Check from "./Check";
+import ArrowsClockwise from "./ArrowClockwise";
+import PencilSimple from "./PencilSimple";
+import TrashSimple from "./TrashSimple";
 export {
   GpsFix,
   Plus,
@@ -40,4 +55,20 @@ export {
   Database,
   CaretUpDown,
   BackgroundVectorUp,
+  BackgroundLinesVector,
+  MapCard,
+  MapCards,
+  Chat,
+  DotsThree,
+  DotsThreeVertical,
+  ArrowUp,
+  SubtractSquare,
+  Analysis,
+  ArrowBendUpLeft,
+  ArrowBendUpRight,
+  Eye,
+  Check,
+  ArrowsClockwise,
+  PencilSimple,
+  TrashSimple
 };

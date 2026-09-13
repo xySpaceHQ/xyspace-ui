@@ -15,5 +15,6 @@ export * from "./components/ui/progress";
 export * from "./components/ui/map";
 export * from "./components/ui/text-area";
 export * from "./components/ui/label";
+export * from "./components/ui/input";
 export * from "./icons";
 export { cn } from "./lib/utils";

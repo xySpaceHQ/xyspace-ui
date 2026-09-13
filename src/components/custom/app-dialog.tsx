@@ -140,7 +140,7 @@ export const AppDialog = ({
           initialFocus={initialFocusRef}
           finalFocus={finalFocusRef}
           className={cn(
-            "fixed z-50 flex w-full flex-col gap-4 overflow-hidden rounded-16 border border-border-01 bg-surface-base-00 p-xl text-sm text-popover-foreground shadow-md duration-100 outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+            "fixed z-50 flex w-full flex-col gap-4 overflow-hidden rounded-24 border border-border-01 bg-overlay-02 p-6 text-sm text-popover-foreground shadow-md duration-100 outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
             positionClassName[position],
             sizeClassName[size],
             scrollable && "overflow-y-auto",
