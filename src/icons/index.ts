@@ -34,6 +34,7 @@ import Check from "./Check";
 import ArrowsClockwise from "./ArrowClockwise";
 import PencilSimple from "./PencilSimple";
 import TrashSimple from "./TrashSimple";
+import Bell from "./Bell";
 export {
   GpsFix,
   Plus,
@@ -70,5 +71,6 @@ export {
   Check,
   ArrowsClockwise,
   PencilSimple,
-  TrashSimple
+  TrashSimple,
+  Bell,
 };
