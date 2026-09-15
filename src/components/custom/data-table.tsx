@@ -77,6 +77,7 @@ interface DataTableProps<TData, TValue> {
   tableClassName?: string; // Optional className for table view container
 
   positionPaginationControls?: "right" | "left";
+  renderEmptyState?: () => React.ReactNode; // Optional function to render a custom empty state
 }
 
 export function DataTable<TData, TValue>({
@@ -100,6 +101,7 @@ export function DataTable<TData, TValue>({
   showSelectedCount = false,
   gridViewClassName,
   tableClassName,
+  renderEmptyState,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -148,6 +150,7 @@ export function DataTable<TData, TValue>({
   const currentPageIndex = table.getState().pagination.pageIndex;
   const currentPageSize = table.getState().pagination.pageSize;
   const totalPageCount = table.getPageCount();
+  const isEmpty = !isLoading && table.getRowModel().rows.length === 0;
 
   return (
     <div className="space-y-1">
@@ -283,9 +286,15 @@ export function DataTable<TData, TValue>({
                 <TableRow>
                   <TableCell
                     colSpan={columns.length}
-                    className="h-24 text-center text-muted-foreground"
+                    className="h-48 text-center text-muted-foreground"
                   >
-                    No results found.
+                    <div className="flex h-full w-full items-center justify-center">
+                      {renderEmptyState ? (
+                        renderEmptyState()
+                      ) : (
+                        <span>No results found.</span>
+                      )}
+                    </div>
                   </TableCell>
                 </TableRow>
               )}
@@ -357,99 +366,101 @@ export function DataTable<TData, TValue>({
               </div>
             ))
           ) : (
-            <div className="col-span-full text-center py-12 text-muted-foreground">
-              No results found.
+            <div className="col-span-full flex items-center justify-center py-12 text-muted-foreground">
+              {renderEmptyState ? renderEmptyState() : "No results found."}
             </div>
           )}
         </div>
       )}
 
       {/* Pagination */}
-      <div className="flex items-center justify-between px-2">
-        <div
-          className={cn(
-            "flex-1 text-sm text-muted-foreground",
-            positionPaginationControls === "left" && "order-2",
-          )}
-        >
-          {showSelectedCount
-            ? `${table.getFilteredSelectedRowModel().rows.length} of ${
-                table.getFilteredRowModel().rows.length
-              } row(s) selected.`
-            : null}
+      {!isEmpty && (
+        <div className="flex items-center justify-between px-2 mt-6">
+          <div
+            className={cn(
+              "flex-1 text-sm text-muted-foreground",
+              positionPaginationControls === "left" && "order-2",
+            )}
+          >
+            {showSelectedCount
+              ? `${table.getFilteredSelectedRowModel().rows.length} of ${
+                  table.getFilteredRowModel().rows.length
+                } row(s) selected.`
+              : null}
+          </div>
+
+          <div
+            className={cn(
+              "flex items-center space-x-6 lg:space-x-8",
+              positionPaginationControls === "left" && "order-1",
+            )}
+          >
+            <div className="flex items-center space-x-2">
+              <p className="text-sm font-medium">Rows per page</p>
+              <Select
+                value={`${currentPageSize}`}
+                onValueChange={(value) => {
+                  table.setPageSize(Number(value));
+                }}
+              >
+                <SelectTrigger className="h-8 w-[70px]">
+                  <SelectValue placeholder={currentPageSize} />
+                </SelectTrigger>
+                <SelectContent side="top">
+                  {pageSizeOptions.map((size) => (
+                    <SelectItem key={size} value={`${size}`}>
+                      {size}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+              Page {currentPageIndex + 1} of {Math.max(totalPageCount, 1)}
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                className="hidden h-8 w-8 p-0 lg:flex"
+                onClick={() => table.setPageIndex(0)}
+                disabled={!table.getCanPreviousPage()}
+              >
+                <span className="sr-only">Go to first page</span>
+                <ChevronsLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                className="h-8 w-8 p-0"
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+              >
+                <span className="sr-only">Go to previous page</span>
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                className="h-8 w-8 p-0"
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}
+              >
+                <span className="sr-only">Go to next page</span>
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                className="hidden h-8 w-8 p-0 lg:flex"
+                onClick={() => table.setPageIndex(totalPageCount - 1)}
+                disabled={!table.getCanNextPage()}
+              >
+                <span className="sr-only">Go to last page</span>
+                <ChevronsRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
         </div>
-
-        <div
-          className={cn(
-            "flex items-center space-x-6 lg:space-x-8",
-            positionPaginationControls === "left" && "order-1",
-          )}
-        >
-          <div className="flex items-center space-x-2">
-            <p className="text-sm font-medium">Rows per page</p>
-            <Select
-              value={`${currentPageSize}`}
-              onValueChange={(value) => {
-                table.setPageSize(Number(value));
-              }}
-            >
-              <SelectTrigger className="h-8 w-[70px]">
-                <SelectValue placeholder={currentPageSize} />
-              </SelectTrigger>
-              <SelectContent side="top">
-                {pageSizeOptions.map((size) => (
-                  <SelectItem key={size} value={`${size}`}>
-                    {size}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-            Page {currentPageIndex + 1} of {Math.max(totalPageCount, 1)}
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              className="hidden h-8 w-8 p-0 lg:flex"
-              onClick={() => table.setPageIndex(0)}
-              disabled={!table.getCanPreviousPage()}
-            >
-              <span className="sr-only">Go to first page</span>
-              <ChevronsLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              className="h-8 w-8 p-0"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              <span className="sr-only">Go to previous page</span>
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              className="h-8 w-8 p-0"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              <span className="sr-only">Go to next page</span>
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              className="hidden h-8 w-8 p-0 lg:flex"
-              onClick={() => table.setPageIndex(totalPageCount - 1)}
-              disabled={!table.getCanNextPage()}
-            >
-              <span className="sr-only">Go to last page</span>
-              <ChevronsRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      </div>
+      )}
     </div>
   );
 }

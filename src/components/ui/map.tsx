@@ -10,6 +10,7 @@ import {
   type MarkerInstance,
   type MarkerEvent,
   type MarkerDragEvent,
+  MapMouseEvent,
 } from "@vis.gl/react-maplibre";
 import { addProtocol, setWorkerUrl } from "maplibre-gl";
 import type * as MapLibreGL from "maplibre-gl";
@@ -2300,6 +2301,7 @@ export type {
   MarkerTooltipProps,
   MarkerLabelProps,
   MapControlsProps,
+  MapMouseEvent,
   MapPopupProps,
   MapRouteProps,
   MapRouteHandle,
