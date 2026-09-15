@@ -1508,6 +1508,12 @@ type MapGeoJSONProps<
    * as a `case` expression keyed on hover feature-state. Requires `promoteId`.
    */
   fillHoverPaint?: MapFillPaint;
+  /**
+   * Paint merged onto the outline layer for the feature under the cursor,
+   * applied as a `case` expression keyed on hover feature-state. Requires
+   * `promoteId`.
+   */
+  lineHoverPaint?: MapLinePaint;
   /** Callback when a feature is clicked. */
   onClick?: (e: MapGeoJSONEvent<P>) => void;
   /** Callback fired when the hovered feature changes; `null` when the cursor leaves. */
@@ -1544,6 +1550,7 @@ function MapGeoJSON<
   fillPaint,
   linePaint,
   fillHoverPaint,
+  lineHoverPaint,
   onClick,
   onHover,
   interactive = false,
@@ -1577,12 +1584,16 @@ function MapGeoJSON<
     [defaults.fill, fillPaint, fillHoverPaint],
   );
   const mergedLinePaint = useMemo(
-    () => ({
-      "line-color": defaults.line,
-      "line-width": 0.5,
-      ...(linePaint || {}),
-    }),
-    [defaults.line, linePaint],
+    () =>
+      mergeHoverPaint(
+        {
+          "line-color": defaults.line,
+          "line-width": 0.5,
+          ...(linePaint || {}),
+        },
+        lineHoverPaint,
+      ),
+    [defaults.line, linePaint, lineHoverPaint],
   );
   const latestRef = useRef({ onClick, onHover });
   latestRef.current = { onClick, onHover };
@@ -1662,19 +1673,19 @@ function MapGeoJSON<
       data={data as GeoJSON.GeoJSON}
       {...(promoteId ? { promoteId } : {})}
     >
-      {showFill && (
-        <Layer
-          id={fillLayerId}
-          type="fill"
-          paint={mergedFillPaint}
-          beforeId={beforeId}
-        />
-      )}
       {showLine && (
         <Layer
           id={lineLayerId}
           type="line"
           paint={mergedLinePaint}
+          beforeId={beforeId}
+        />
+      )}
+      {showFill && (
+        <Layer
+          id={fillLayerId}
+          type="fill"
+          paint={mergedFillPaint}
           beforeId={beforeId}
         />
       )}

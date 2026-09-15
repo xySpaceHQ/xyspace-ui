@@ -21,6 +21,7 @@ import BackgroundVectorUp from "@/vectors/BackgroundVectorUp";
 import MapCard from "./MapCard";
 import MapCards from "./MapCards";
 import BackgroundLinesVector from "@/vectors/BackgroundLinesVector";
+import TaskVector from "@/vectors/TaskVector";
 import Chat from "./Chat";
 import DotsThree from "./DotsThree";
 import DotsThreeVertical from "./DotsThreeVertical";
@@ -35,6 +36,8 @@ import ArrowsClockwise from "./ArrowClockwise";
 import PencilSimple from "./PencilSimple";
 import TrashSimple from "./TrashSimple";
 import Bell from "./Bell";
+import ArrowOutSimple from "./ArrowOutSimple";
+
 export {
   GpsFix,
   Plus,
@@ -73,4 +76,6 @@ export {
   PencilSimple,
   TrashSimple,
   Bell,
+  TaskVector,
+  ArrowOutSimple,
 };
