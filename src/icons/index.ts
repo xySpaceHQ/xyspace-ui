@@ -37,6 +37,10 @@ import PencilSimple from "./PencilSimple";
 import TrashSimple from "./TrashSimple";
 import Bell from "./Bell";
 import ArrowOutSimple from "./ArrowOutSimple";
+import Upload from "./Upload";
+import BoundaryVector from "@/vectors/BoundaryVector";
+import GridFour from "./GridFour";
+import Hexagon from "./Hexagon";
 
 export {
   GpsFix,
@@ -78,4 +82,8 @@ export {
   Bell,
   TaskVector,
   ArrowOutSimple,
+  Upload,
+  BoundaryVector,
+  GridFour,
+  Hexagon,
 };

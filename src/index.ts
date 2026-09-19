@@ -12,6 +12,7 @@ export * from "./components/ui/table";
 export * from "./components/ui/tab";
 export * from "./components/ui/form";
 export * from "./components/ui/progress";
+export * from "./components/ui/slider";
 export * from "./components/ui/map";
 export * from "./components/ui/text-area";
 export * from "./components/ui/label";
