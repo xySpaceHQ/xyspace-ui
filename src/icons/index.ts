@@ -41,6 +41,13 @@ import Upload from "./Upload";
 import BoundaryVector from "@/vectors/BoundaryVector";
 import GridFour from "./GridFour";
 import Hexagon from "./Hexagon";
+import ListMagnifyingGlass from "./ListMagnifyingGlass";
+import DownloadSimple from "./DownloadSimple";
+import Palette from "./Palette";
+import Scan from "./Scan";
+import ClockCounterClockwise from "./ClockCounterClockwise";
+import ChartBar from "./ChartBar";
+import FunnelSimple from "./FunnelSimple";
 
 export {
   GpsFix,
@@ -86,4 +93,11 @@ export {
   BoundaryVector,
   GridFour,
   Hexagon,
+  ListMagnifyingGlass,
+  DownloadSimple,
+  Palette,
+  Scan,
+  ClockCounterClockwise,
+  ChartBar,
+  FunnelSimple,
 };

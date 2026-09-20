@@ -1,6 +1,6 @@
 import { type SVGProps } from "react";
 
-const TrashSimple = (props: SVGProps<SVGSVGElement>) => {
+const ClockCounterClockwise = (props: SVGProps<SVGSVGElement>) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -10,15 +10,16 @@ const TrashSimple = (props: SVGProps<SVGSVGElement>) => {
       viewBox="0 0 16 16"
       {...props}
     >
-      <path
+      <g
         stroke="CurrentColor"
-        d="M13.5 3.5h-11m3-2h5m2 2V13a.5.5 0 0 1-.5.5H4a.5.5 0 0 1-.5-.5V3.5"
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="1.2"
-      />
+      >
+        <path d="M8 5v3l2.5 1.5m-6-3H2V4" />
+        <path d="M4.225 12a5.5 5.5 0 1 0-.114-7.89C3.375 4.857 2.768 5.559 2 6.5" />
+      </g>
     </svg>
   );
 };
-
-export default TrashSimple;
+export default ClockCounterClockwise;

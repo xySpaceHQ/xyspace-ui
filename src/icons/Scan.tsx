@@ -1,6 +1,6 @@
 import { type SVGProps } from "react";
 
-const TrashSimple = (props: SVGProps<SVGSVGElement>) => {
+const Scan = (props: SVGProps<SVGSVGElement>) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -12,7 +12,7 @@ const TrashSimple = (props: SVGProps<SVGSVGElement>) => {
     >
       <path
         stroke="CurrentColor"
-        d="M13.5 3.5h-11m3-2h5m2 2V13a.5.5 0 0 1-.5.5H4a.5.5 0 0 1-.5-.5V3.5"
+        d="M11 2.5h2.5V5M5 13.5H2.5V11m11 0v2.5H11M2.5 5V2.5H5M11 5H5v6h6z"
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="1.2"
@@ -20,5 +20,4 @@ const TrashSimple = (props: SVGProps<SVGSVGElement>) => {
     </svg>
   );
 };
-
-export default TrashSimple;
+export default Scan;

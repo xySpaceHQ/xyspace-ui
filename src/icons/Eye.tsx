@@ -11,7 +11,7 @@ const Eye = (props: SVGProps<SVGSVGElement>) => {
       {...props}
     >
       <g
-        stroke="#3D3F44"
+        stroke="CurrentColor"
         clipPath="url(#a)"
         strokeLinecap="round"
         strokeLinejoin="round"
