@@ -67,11 +67,21 @@ interface DataTableProps<TData, TValue> {
   renderGridCard?: (row: Row<TData>) => React.ReactNode;
   renderGridSkeleton?: () => React.ReactNode;
   gridSkeletonCount?: number;
+  // Infinite scroll props (only used when paginationMode is "infinite")
+  // "pages" shows the pagination controls, "infinite" replaces them with
+  // loading the next batch as the user scrolls to the end of the rows. `data`
+  // should hold every row loaded so far.
+  paginationMode?: "pages" | "infinite";
+  hasMore?: boolean;
+  isFetchingMore?: boolean;
+  onLoadMore?: () => void;
+  loadMoreRootMargin?: string;
   // Loading state
   isLoading?: boolean;
   // Pagination UI options
   pageSizeOptions?: number[];
   showSelectedCount?: boolean;
+  className?: string; // Optional className for the root element
   gridViewClassName?: string; // Optional className for grid view container
 
   tableClassName?: string; // Optional className for table view container
@@ -79,6 +89,10 @@ interface DataTableProps<TData, TValue> {
   positionPaginationControls?: "right" | "left";
   renderEmptyState?: () => React.ReactNode; // Optional function to render a custom empty state
 }
+
+// Vertical dividers between body cells, matching the ones in the header.
+const cellDividerClass = (index: number) =>
+  index === 0 ? "border-l-0" : "border-l";
 
 export function DataTable<TData, TValue>({
   columns,
@@ -95,10 +109,16 @@ export function DataTable<TData, TValue>({
   renderGridCard,
   renderGridSkeleton,
   gridSkeletonCount = 6,
+  paginationMode = "pages",
+  hasMore = false,
+  isFetchingMore = false,
+  onLoadMore,
+  loadMoreRootMargin = "0px 0px 120px 0px",
   isLoading = false,
   pageSizeOptions = [10, 20, 30, 40, 50],
   positionPaginationControls = "right",
   showSelectedCount = false,
+  className,
   gridViewClassName,
   tableClassName,
   renderEmptyState,
@@ -124,6 +144,10 @@ export function DataTable<TData, TValue>({
       pageSize: pageSizeOptions[0] ?? 10,
     });
 
+  const isInfinite = paginationMode === "infinite";
+  // Infinite mode owns the row loading, so the pagination props are ignored.
+  const isServerPaginated = manualPagination && !isInfinite;
+
   const table = useReactTable({
     data,
     columns,
@@ -133,18 +157,18 @@ export function DataTable<TData, TValue>({
       columnFilters,
       columnVisibility,
       rowSelection,
-      pagination: manualPagination ? pagination! : internalPagination,
+      pagination: isServerPaginated ? pagination! : internalPagination,
     },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    onPaginationChange: manualPagination
+    onPaginationChange: isServerPaginated
       ? onPaginationChange!
       : setInternalPagination,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    manualPagination: manualPagination,
+    manualPagination: manualPagination || isInfinite,
   });
 
   const currentPageIndex = table.getState().pagination.pageIndex;
@@ -152,8 +176,42 @@ export function DataTable<TData, TValue>({
   const totalPageCount = table.getPageCount();
   const isEmpty = !isLoading && table.getRowModel().rows.length === 0;
 
+  // The element that scrolls the rows, and a marker at the end of them that
+  // triggers loading more once it comes into view.
+  const scrollRef = React.useRef<HTMLDivElement>(null);
+  const sentinelRef = React.useRef<HTMLDivElement>(null);
+  const onLoadMoreRef = React.useRef(onLoadMore);
+  React.useEffect(() => {
+    onLoadMoreRef.current = onLoadMore;
+  }, [onLoadMore]);
+
+  const canLoadMore = isInfinite && hasMore && !isLoading && !isFetchingMore;
+  const loadedRowCount = data.length;
+
+  React.useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!canLoadMore || !sentinel) return;
+
+    // The observer reports the sentinel's state as soon as it starts observing,
+    // so a batch that doesn't fill the viewport keeps loading until it does.
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          onLoadMoreRef.current?.();
+        }
+      },
+      { root: scrollRef.current, rootMargin: loadMoreRootMargin },
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [canLoadMore, loadMoreRootMargin, loadedRowCount, viewMode]);
+
+  const loadMoreSentinel = isInfinite ? (
+    <div ref={sentinelRef} aria-hidden className="h-px w-full" />
+  ) : null;
+
   return (
-    <div className="space-y-1">
+    <div className={cn("flex flex-col gap-1", className)}>
       {/* Toolbar */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -213,12 +271,14 @@ export function DataTable<TData, TValue>({
       {/* Table View */}
       {viewMode === "table" && (
         <div
+          ref={scrollRef}
           className={cn(
-            "rounded-md border-x border-b overflow-hidden",
+            "min-h-0 flex-1 overflow-auto rounded-md border-x border-b",
             tableClassName,
           )}
         >
-          <Table>
+          {/* The wrapper above is the scroll container, so the header can stick to it */}
+          <Table containerClassName="overflow-visible">
             <TableHeader className="bg-surface-level-01">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -226,7 +286,7 @@ export function DataTable<TData, TValue>({
                     <TableHead
                       key={header.id}
                       className={cn(
-                        "cursor-pointer select-none px-2 capitalize border-y border-border-01 text-body font-medium text-xs",
+                        "sticky top-0 z-10 bg-surface-level-01 cursor-pointer select-none px-2 capitalize border-y border-border-01 text-body font-medium text-xs",
                         index === 0 ? "border-l-0" : "border-l",
                         index === headerGroup.headers.length - 1
                           ? "border-r-0"
@@ -256,7 +316,10 @@ export function DataTable<TData, TValue>({
                 Array.from({ length: 10 }).map((_, index) => (
                   <TableRow key={index}>
                     {columns.map((column, cellIndex) => (
-                      <TableCell key={cellIndex}>
+                      <TableCell
+                        key={cellIndex}
+                        className={cellDividerClass(cellIndex)}
+                      >
                         <Skeleton className="h-6 w-full" />
                       </TableCell>
                     ))}
@@ -269,10 +332,13 @@ export function DataTable<TData, TValue>({
                     data-state={row.getIsSelected() && "selected"}
                     className="hover:bg-muted/50 h-15 "
                   >
-                    {row.getVisibleCells().map((cell) => (
+                    {row.getVisibleCells().map((cell, index) => (
                       <TableCell
                         key={cell.id}
-                        className="px-2 text-subtext-01 text-xs capitalize"
+                        className={cn(
+                          "px-2 text-subtext-01 text-xs capitalize",
+                          cellDividerClass(index),
+                        )}
                       >
                         {flexRender(
                           cell.column.columnDef.cell,
@@ -298,84 +364,105 @@ export function DataTable<TData, TValue>({
                   </TableCell>
                 </TableRow>
               )}
+              {isInfinite &&
+                isFetchingMore &&
+                Array.from({ length: 3 }).map((_, index) => (
+                  <TableRow key={`fetching-more-${index}`}>
+                    {table.getVisibleLeafColumns().map((column, index) => (
+                      <TableCell
+                        key={column.id}
+                        className={cellDividerClass(index)}
+                      >
+                        <Skeleton className="h-6 w-full" />
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
+          {loadMoreSentinel}
         </div>
       )}
 
       {/* Grid View */}
       {viewMode === "grid" && (
         <div
-          className={cn("grid gap-4", gridViewClassName)}
-          style={{
-            gridTemplateColumns: `repeat(${gridColumns}, minmax(0, 1fr))`,
-          }}
+          ref={scrollRef}
+          className={cn("min-h-0 flex-1", isInfinite && "overflow-auto")}
         >
-          {isLoading ? (
-            // Skeleton loader for grid
-            Array.from({ length: gridSkeletonCount }).map((_, index) =>
-              renderGridSkeleton ? (
-                <React.Fragment key={index}>
-                  {renderGridSkeleton()}
-                </React.Fragment>
-              ) : (
-                <div
-                  key={index}
-                  className="rounded-lg border bg-card p-6 shadow-sm"
-                >
-                  <Skeleton className="h-6 w-3/4 mb-4" />
-                  <Skeleton className="h-4 w-full mb-2" />
-                  <Skeleton className="h-4 w-full mb-2" />
-                  <Skeleton className="h-4 w-2/3 mb-4" />
-                  <div className="flex gap-2">
-                    <Skeleton className="h-6 w-20" />
-                    <Skeleton className="h-6 w-16" />
-                  </div>
-                </div>
-              ),
-            )
-          ) : table.getRowModel().rows.length ? (
-            table.getRowModel().rows.map((row) => (
-              <div key={row.id}>
-                {renderGridCard ? (
-                  renderGridCard(row)
+          <div
+            className={cn("grid gap-4", gridViewClassName)}
+            style={{
+              gridTemplateColumns: `repeat(${gridColumns}, minmax(0, 1fr))`,
+            }}
+          >
+            {isLoading ? (
+              // Skeleton loader for grid
+              Array.from({ length: gridSkeletonCount }).map((_, index) =>
+                renderGridSkeleton ? (
+                  <React.Fragment key={index}>
+                    {renderGridSkeleton()}
+                  </React.Fragment>
                 ) : (
-                  <div className="rounded-lg border bg-card p-4 shadow-sm hover:shadow-md transition-shadow">
-                    {columns.map((column) => {
-                      const cell = row
-                        .getVisibleCells()
-                        .find((c) => c.column.id === column.id);
-                      return cell ? (
-                        <div key={cell.id} className="mb-2 last:mb-0">
-                          <div className="text-sm font-medium text-muted-foreground">
-                            {typeof column.header === "string"
-                              ? column.header.replace(/_/g, " ")
-                              : column.id}
-                          </div>
-                          <div className="text-sm">
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext(),
-                            )}
-                          </div>
-                        </div>
-                      ) : null;
-                    })}
+                  <div
+                    key={index}
+                    className="rounded-lg border bg-card p-6 shadow-sm"
+                  >
+                    <Skeleton className="h-6 w-3/4 mb-4" />
+                    <Skeleton className="h-4 w-full mb-2" />
+                    <Skeleton className="h-4 w-full mb-2" />
+                    <Skeleton className="h-4 w-2/3 mb-4" />
+                    <div className="flex gap-2">
+                      <Skeleton className="h-6 w-20" />
+                      <Skeleton className="h-6 w-16" />
+                    </div>
                   </div>
-                )}
+                ),
+              )
+            ) : table.getRowModel().rows.length ? (
+              table.getRowModel().rows.map((row) => (
+                <div key={row.id}>
+                  {renderGridCard ? (
+                    renderGridCard(row)
+                  ) : (
+                    <div className="rounded-lg border bg-card p-4 shadow-sm hover:shadow-md transition-shadow">
+                      {columns.map((column) => {
+                        const cell = row
+                          .getVisibleCells()
+                          .find((c) => c.column.id === column.id);
+                        return cell ? (
+                          <div key={cell.id} className="mb-2 last:mb-0">
+                            <div className="text-sm font-medium text-muted-foreground">
+                              {typeof column.header === "string"
+                                ? column.header.replace(/_/g, " ")
+                                : column.id}
+                            </div>
+                            <div className="text-sm">
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext(),
+                              )}
+                            </div>
+                          </div>
+                        ) : null;
+                      })}
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              <div className="col-span-full flex items-center justify-center py-12 text-muted-foreground">
+                {renderEmptyState ? renderEmptyState() : "No results found."}
               </div>
-            ))
-          ) : (
-            <div className="col-span-full flex items-center justify-center py-12 text-muted-foreground">
-              {renderEmptyState ? renderEmptyState() : "No results found."}
-            </div>
-          )}
+            )}
+          </div>
+          {loadMoreSentinel}
         </div>
       )}
 
       {/* Pagination */}
-      {!isEmpty && (
-        <div className="flex items-center justify-between px-2 mt-6">
+      {!isEmpty && !isInfinite && (
+        <div className="flex shrink-0 items-center justify-between px-2 mt-6">
           <div
             className={cn(
               "flex-1 text-sm text-muted-foreground",
