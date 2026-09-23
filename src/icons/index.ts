@@ -48,6 +48,7 @@ import Scan from "./Scan";
 import ClockCounterClockwise from "./ClockCounterClockwise";
 import ChartBar from "./ChartBar";
 import FunnelSimple from "./FunnelSimple";
+import EyeOff from "./EyeOff";
 
 export {
   GpsFix,
@@ -100,4 +101,5 @@ export {
   ClockCounterClockwise,
   ChartBar,
   FunnelSimple,
+  EyeOff,
 };
