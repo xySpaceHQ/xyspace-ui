@@ -11,7 +11,7 @@ const DotsThree = (props: SVGProps<SVGSVGElement>) => {
       {...props}
     >
       <path
-        stroke="#3D3F44"
+        stroke="CurrentColor"
         d="M6.154 6.73a.577.577 0 1 0 0-1.153.577.577 0 0 0 0 1.154Zm3.269 0a.577.577 0 1 0 0-1.153.577.577 0 0 0 0 1.154Zm-6.538 0a.577.577 0 1 0 0-1.153.577.577 0 0 0 0 1.154Z"
         strokeWidth=".667"
       />

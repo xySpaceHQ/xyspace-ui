@@ -87,7 +87,7 @@ export function SectionContainer({
   return (
     <section
       className={cn(
-        "w-full flex flex-col gap-4 rounded-16 border border-border-01 bg-surface-base-00 p-xl shadow-md",
+        "w-full flex flex-col gap-4 rounded-16 border border-border-01 bg-surface-base-00 p-xl shadow-md overflow-clip",
         className,
       )}
     >

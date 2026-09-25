@@ -98,7 +98,7 @@ function DropdownMenuCheckboxItem({
       data-slot="dropdown-menu-checkbox-item"
       data-inset={inset}
       className={cn(
-        "focus:bg-surface-level-03 focus:text-subtext-01 focus:**:text-subtext-01 gap-1.5 font-medium rounded-md py-1 pr-8 pl-1.5 text-xs data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4 relative flex cursor-default items-center outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        "focus:bg-surface-level-02 focus:text-subtext-01 focus:**:text-subtext-01 gap-1.5 font-medium rounded-md py-1 pr-8 pl-1.5 text-xs data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4 relative flex cursor-default items-center outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
         className,
       )}
       checked={checked}
@@ -141,7 +141,7 @@ function DropdownMenuRadioItem({
       data-slot="dropdown-menu-radio-item"
       data-inset={inset}
       className={cn(
-        "focus:bg-surface-level-03 focus:text-subtext-01 focus:**:text-subtext-01 gap-1.5 rounded-md py-1 pr-8 pl-1.5 text-xs data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4 relative flex cursor-default items-center outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        "focus:bg-surface-level-02 focus:text-subtext-01 focus:**:text-subtext-01 gap-1.5 rounded-md py-1 pr-8 pl-1.5 text-xs data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4 relative flex cursor-default items-center outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
         className,
       )}
       {...props}

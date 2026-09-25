@@ -11,7 +11,7 @@ const Chat = (props: SVGProps<SVGSVGElement>) => {
       {...props}
     >
       <path
-        stroke="#282A2E"
+        stroke="CurrentColor"
         d="M3.175 16.18a.563.563 0 0 1-.925-.43V4.5a.563.563 0 0 1 .563-.562h12.375a.56.56 0 0 1 .562.562v9a.56.56 0 0 1-.562.563H5.624z"
         strokeLinecap="round"
         strokeLinejoin="round"

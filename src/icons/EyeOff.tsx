@@ -11,7 +11,7 @@ const EyeOff = (props: SVGProps<SVGSVGElement>) => {
       {...props}
     >
       <path
-        stroke="#3D3F44"
+        stroke="CurrentColor"
         d="M7 6.362A9.7 9.7 0 0 1 12 5c6.307 0 9.367 5.683 9.91 6.808.06.123.06.261 0 .385-.352.728-1.756 3.362-4.41 5.131M14 18.8c-.658.134-1.328.2-2 .2-6.307 0-9.367-5.683-9.91-6.808a.44.44 0 0 1 0-.386c.219-.452.84-1.632 1.91-2.885m6 .843A3 3 0 0 1 14.236 14M3 3l18 18"
         strokeLinecap="round"
         strokeLinejoin="round"

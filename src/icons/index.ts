@@ -49,6 +49,9 @@ import ClockCounterClockwise from "./ClockCounterClockwise";
 import ChartBar from "./ChartBar";
 import FunnelSimple from "./FunnelSimple";
 import EyeOff from "./EyeOff";
+import Rectangle from "./Rectangle";
+import Circle from "./Circle";
+import SelectionAll from "./SelectAll";
 
 export {
   GpsFix,
@@ -102,4 +105,7 @@ export {
   ChartBar,
   FunnelSimple,
   EyeOff,
+  Rectangle,
+  Circle,
+  SelectionAll
 };

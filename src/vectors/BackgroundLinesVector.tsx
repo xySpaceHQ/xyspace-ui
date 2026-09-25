@@ -1,6 +1,10 @@
-import { type SVGProps } from "react";
+import { type SVGProps, useId } from "react";
 
 const BackgroundLinesVector = (props: SVGProps<SVGSVGElement>) => {
+  // Ids are document-global, so prefix them per instance; otherwise every copy
+  // resolves url(#…) to the first copy in the DOM, which may be hidden.
+  const uid = useId().replace(/[^a-zA-Z0-9_-]/g, "");
+
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -10,9 +14,9 @@ const BackgroundLinesVector = (props: SVGProps<SVGSVGElement>) => {
       viewBox="0 0 264 266"
       {...props}
     >
-      <g clipPath="url(#a)">
+      <g clipPath={`url(#${uid}a)`}>
         <mask
-          id="a"
+          id={`${uid}a`}
           width="266"
           height="278"
           x="0"
@@ -27,7 +31,7 @@ const BackgroundLinesVector = (props: SVGProps<SVGSVGElement>) => {
         </mask>
         <g
           stroke="#F0F0F1"
-          mask="url(#a)"
+          mask={`url(#${uid}a)`}
           strokeLinecap="square"
           strokeLinejoin="bevel"
           strokeWidth=".982"
