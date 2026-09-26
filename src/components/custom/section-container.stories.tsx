@@ -183,6 +183,20 @@ export const CollapsibleControlled: Story = {
   },
 };
 
+export const CollapsibleUnevenPadding: Story = {
+  render: () => (
+    <SectionContainer
+      title="Uneven padding when expanded"
+      className="flex-col px-1.5 pt-1.5 pb-0"
+      collapsible
+      defaultCollapsed
+      collapsedClassName="p-1.5"
+    >
+      <Placeholder label="the expand icon stays centred when collapsed" />
+    </SectionContainer>
+  ),
+};
+
 export const CollapsibleCustomIcons: Story = {
   render: () => (
     <SectionContainer

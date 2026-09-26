@@ -52,6 +52,7 @@ import EyeOff from "./EyeOff";
 import Rectangle from "./Rectangle";
 import Circle from "./Circle";
 import SelectionAll from "./SelectAll";
+import ArrowCircleUp from "./ArrowCircleUp";
 
 export {
   GpsFix,
@@ -107,5 +108,6 @@ export {
   EyeOff,
   Rectangle,
   Circle,
-  SelectionAll
+  SelectionAll,
+  ArrowCircleUp,
 };

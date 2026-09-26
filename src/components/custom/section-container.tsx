@@ -25,6 +25,8 @@ type SectionContainerProps = {
   collapseIcon?: React.ReactNode;
   expandIcon?: React.ReactNode;
   collapseButtonProps?: Omit<React.ComponentProps<typeof Button>, "onClick">;
+  /** Classes for the collapsed state, applied after `className`. */
+  collapsedClassName?: string;
 };
 
 export function SectionContainer({
@@ -48,6 +50,7 @@ export function SectionContainer({
   collapseIcon,
   expandIcon,
   collapseButtonProps,
+  collapsedClassName,
 }: SectionContainerProps) {
   const [internalCollapsed, setInternalCollapsed] = useState(defaultCollapsed);
   const isCollapsed = collapsible && (collapsed ?? internalCollapsed);
@@ -65,8 +68,12 @@ export function SectionContainer({
     return (
       <section
         className={cn(
-          "inline-flex rounded-16 border border-border-01 bg-surface-base-00 p-2 shadow-md",
+          "inline-flex rounded-16 border border-border-01 bg-surface-base-00 shadow-md",
           className,
+          // `className` is written for the expanded layout; reset direction and
+          // padding so the expand button always sits centred.
+          "flex-row items-center justify-center p-2",
+          collapsedClassName,
         )}
       >
         <Button
