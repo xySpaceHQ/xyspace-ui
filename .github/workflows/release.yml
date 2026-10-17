@@ -40,6 +40,7 @@ jobs:
             exit 1
           fi
 
+      # Trusted publishing (OIDC) requires npm >= 11.5.1; Node 22 ships npm 10
+      - run: npm install -g npm@latest
+
       - run: npm publish --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
