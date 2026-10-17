@@ -11,7 +11,7 @@ const ArrowUp = (props: SVGProps<SVGSVGElement>) => {
       {...props}
     >
       <path
-        stroke="#656972"
+        stroke="CurrentColor"
         d="M7.385 12.462V2.307M3.23 6.462l4.155-4.154 4.154 4.154"
         strokeLinecap="round"
         strokeLinejoin="round"

@@ -3,6 +3,7 @@ export * from "./components/custom/app-tab";
 export * from "./components/custom/section-container";
 export * from "./components/custom/app-dialog";
 export * from "./components/custom/app-combobox";
+export * from "./components/custom/column-picker";
 export * from "./components/ui/avatar";
 export * from "./components/ui/button";
 export * from "./components/ui/chips";

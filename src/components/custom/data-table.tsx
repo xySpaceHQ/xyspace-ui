@@ -13,6 +13,7 @@ import {
   RowSelectionState,
   PaginationState,
   Row,
+  Column,
 } from "@tanstack/react-table";
 
 import {
@@ -24,12 +25,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { ColumnPicker } from "@/components/custom/column-picker";
 import {
   Select,
   SelectContent,
@@ -87,12 +83,42 @@ interface DataTableProps<TData, TValue> {
   tableClassName?: string; // Optional className for table view container
 
   positionPaginationControls?: "right" | "left";
+  // Column ids to keep stuck to the left edge while the table scrolls
+  // sideways, in the order given. A pinned column's width comes from its
+  // `size` in the column def (150px when unset).
+  pinnedColumns?: string[];
   renderEmptyState?: () => React.ReactNode; // Optional function to render a custom empty state
 }
 
 // Vertical dividers between body cells, matching the ones in the header.
 const cellDividerClass = (index: number) =>
   index === 0 ? "border-l-0" : "border-l";
+
+const EMPTY_PINNED_COLUMNS: string[] = [];
+
+// Sticks a pinned column to the left edge at its offset, with a divider on the
+// last one to separate it from the columns scrolling underneath.
+const pinnedColumnProps = <TData,>(
+  column: Column<TData, unknown>,
+  layer: "head" | "cell",
+) => {
+  if (column.getIsPinned() !== "left") return {};
+  const size = column.getSize();
+  return {
+    className: cn(
+      "sticky truncate",
+      layer === "head" ? "z-20" : "z-[5] bg-surface-base-01",
+      column.getIsLastColumn("left") &&
+        "shadow-[inset_-1px_0_0_var(--color-border-01)]",
+    ),
+    style: {
+      left: column.getStart("left"),
+      width: size,
+      minWidth: size,
+      maxWidth: size,
+    },
+  };
+};
 
 export function DataTable<TData, TValue>({
   columns,
@@ -121,6 +147,7 @@ export function DataTable<TData, TValue>({
   className,
   gridViewClassName,
   tableClassName,
+  pinnedColumns = EMPTY_PINNED_COLUMNS,
   renderEmptyState,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -157,6 +184,7 @@ export function DataTable<TData, TValue>({
       columnFilters,
       columnVisibility,
       rowSelection,
+      columnPinning: { left: pinnedColumns },
       pagination: isServerPaginated ? pagination! : internalPagination,
     },
     onSortingChange: setSorting,
@@ -175,6 +203,10 @@ export function DataTable<TData, TValue>({
   const currentPageSize = table.getState().pagination.pageSize;
   const totalPageCount = table.getPageCount();
   const isEmpty = !isLoading && table.getRowModel().rows.length === 0;
+  const hasPinnedColumns = pinnedColumns.length > 0;
+  const hideableColumns = table
+    .getAllLeafColumns()
+    .filter((column) => column.getCanHide());
 
   // The element that scrolls the rows, and a marker at the end of them that
   // triggers loading more once it comes into view.
@@ -216,33 +248,28 @@ export function DataTable<TData, TValue>({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           {showColumnVisibility && viewMode === "table" && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+            <ColumnPicker
+              columns={hideableColumns.map((column) => ({
+                id: column.id,
+                label: column.id.replace(/_/g, " "),
+              }))}
+              visibleColumnIds={hideableColumns
+                .filter((column) => column.getIsVisible())
+                .map((column) => column.id)}
+              onVisibilityChange={(columnId, visible) =>
+                table.getColumn(columnId)?.toggleVisibility(visible)
+              }
+              onAllVisibilityChange={(visible) =>
+                hideableColumns.forEach((column) =>
+                  column.toggleVisibility(visible),
+                )
+              }
+              trigger={
                 <Button variant="outline" className="text-xs">
                   <Columns2Icon className="mr-2 h-4 w-4" />
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="border border-border-01"
-              >
-                {table
-                  .getAllColumns()
-                  .filter((column) => column.getCanHide())
-                  .map((column) => (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                      className="capitalize text-xs"
-                    >
-                      {column.id.replace(/_/g, " ")}
-                    </DropdownMenuCheckboxItem>
-                  ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+              }
+            />
           )}
         </div>
 
@@ -278,34 +305,50 @@ export function DataTable<TData, TValue>({
           )}
         >
           {/* The wrapper above is the scroll container, so the header can stick to it */}
-          <Table containerClassName="overflow-visible">
+          <Table
+            containerClassName="overflow-visible"
+            className={cn(
+              // Collapsed borders don't travel with sticky cells, so draw
+              // each cell's own bottom border instead of the row's
+              hasPinnedColumns &&
+                "border-separate border-spacing-0 [&_td]:border-b [&_tr:last-child>td]:border-b-0",
+            )}
+          >
             <TableHeader className="bg-surface-level-01">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header, index) => (
-                    <TableHead
-                      key={header.id}
-                      className={cn(
-                        "sticky top-0 z-10 bg-surface-level-01 cursor-pointer select-none px-2 capitalize border-y border-border-01 text-body font-medium text-xs",
-                        index === 0 ? "border-l-0" : "border-l",
-                        index === headerGroup.headers.length - 1
-                          ? "border-r-0"
-                          : "border-r",
-                      )}
-                      onClick={header.column.getToggleSortingHandler()}
-                    >
-                      {typeof header.column.columnDef.header === "string"
-                        ? header.column.columnDef.header.replace(/_/g, " ")
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                      {{
-                        asc: " ↑",
-                        desc: " ↓",
-                      }[header.column.getIsSorted() as string] ?? null}
-                    </TableHead>
-                  ))}
+                  {headerGroup.headers.map((header, index) => {
+                    const pinned = pinnedColumnProps(header.column, "head");
+                    return (
+                      <TableHead
+                        key={header.id}
+                        style={pinned.style}
+                        className={cn(
+                          "sticky top-0 z-10 bg-surface-level-01 cursor-pointer select-none px-2 capitalize border-y border-border-01 text-body font-medium text-xs",
+                          index === 0 ? "border-l-0" : "border-l",
+                          // Separated borders would double the next header's
+                          // left border
+                          index === headerGroup.headers.length - 1 ||
+                            hasPinnedColumns
+                            ? "border-r-0"
+                            : "border-r",
+                          pinned.className,
+                        )}
+                        onClick={header.column.getToggleSortingHandler()}
+                      >
+                        {typeof header.column.columnDef.header === "string"
+                          ? header.column.columnDef.header.replace(/_/g, " ")
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                        {{
+                          asc: " ↑",
+                          desc: " ↓",
+                        }[header.column.getIsSorted() as string] ?? null}
+                      </TableHead>
+                    );
+                  })}
                 </TableRow>
               ))}
             </TableHeader>
@@ -315,14 +358,21 @@ export function DataTable<TData, TValue>({
                 // Skeleton loader for table
                 Array.from({ length: 10 }).map((_, index) => (
                   <TableRow key={index}>
-                    {columns.map((column, cellIndex) => (
-                      <TableCell
-                        key={cellIndex}
-                        className={cellDividerClass(cellIndex)}
-                      >
-                        <Skeleton className="h-6 w-full" />
-                      </TableCell>
-                    ))}
+                    {table.getVisibleLeafColumns().map((column, cellIndex) => {
+                      const pinned = pinnedColumnProps(column, "cell");
+                      return (
+                        <TableCell
+                          key={column.id}
+                          style={pinned.style}
+                          className={cn(
+                            cellDividerClass(cellIndex),
+                            pinned.className,
+                          )}
+                        >
+                          <Skeleton className="h-6 w-full" />
+                        </TableCell>
+                      );
+                    })}
                   </TableRow>
                 ))
               ) : table.getRowModel().rows.length ? (
@@ -332,20 +382,25 @@ export function DataTable<TData, TValue>({
                     data-state={row.getIsSelected() && "selected"}
                     className="hover:bg-muted/50 h-15 "
                   >
-                    {row.getVisibleCells().map((cell, index) => (
-                      <TableCell
-                        key={cell.id}
-                        className={cn(
-                          "px-2 text-subtext-01 text-xs capitalize",
-                          cellDividerClass(index),
-                        )}
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
-                    ))}
+                    {row.getVisibleCells().map((cell, index) => {
+                      const pinned = pinnedColumnProps(cell.column, "cell");
+                      return (
+                        <TableCell
+                          key={cell.id}
+                          style={pinned.style}
+                          className={cn(
+                            "px-2 text-subtext-01 text-xs capitalize",
+                            cellDividerClass(index),
+                            pinned.className,
+                          )}
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </TableCell>
+                      );
+                    })}
                   </TableRow>
                 ))
               ) : (
@@ -368,14 +423,21 @@ export function DataTable<TData, TValue>({
                 isFetchingMore &&
                 Array.from({ length: 3 }).map((_, index) => (
                   <TableRow key={`fetching-more-${index}`}>
-                    {table.getVisibleLeafColumns().map((column, index) => (
-                      <TableCell
-                        key={column.id}
-                        className={cellDividerClass(index)}
-                      >
-                        <Skeleton className="h-6 w-full" />
-                      </TableCell>
-                    ))}
+                    {table.getVisibleLeafColumns().map((column, index) => {
+                      const pinned = pinnedColumnProps(column, "cell");
+                      return (
+                        <TableCell
+                          key={column.id}
+                          style={pinned.style}
+                          className={cn(
+                            cellDividerClass(index),
+                            pinned.className,
+                          )}
+                        >
+                          <Skeleton className="h-6 w-full" />
+                        </TableCell>
+                      );
+                    })}
                   </TableRow>
                 ))}
             </TableBody>
