@@ -17,6 +17,8 @@ export * from "./components/ui/form";
 export * from "./components/ui/progress";
 export * from "./components/ui/slider";
 export * from "./components/ui/map";
+export * from "./components/ui/map-draw";
+export * from "./components/ui/map-draw-toolbar";
 export * from "./components/ui/text-area";
 export * from "./components/ui/label";
 export * from "./components/ui/input";

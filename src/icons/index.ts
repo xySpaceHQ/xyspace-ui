@@ -34,6 +34,8 @@ import Eye from "./Eye";
 import Check from "./Check";
 import ArrowsClockwise from "./ArrowClockwise";
 import PencilSimple from "./PencilSimple";
+import SelectionPlus from "./SelectionPlus";
+import Ruler from "./Ruler";
 import TrashSimple from "./TrashSimple";
 import Bell from "./Bell";
 import ArrowOutSimple from "./ArrowOutSimple";
@@ -110,4 +112,6 @@ export {
   Circle,
   SelectionAll,
   ArrowCircleUp,
+  SelectionPlus,
+  Ruler,
 };
