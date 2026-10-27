@@ -5,6 +5,7 @@ import type { ComponentType, SVGProps } from "react";
 import {
   ArrowBendUpLeft,
   ArrowBendUpRight,
+  Info,
   PencilSimple,
   Ruler,
   SelectionPlus,
@@ -100,8 +101,8 @@ function ToolbarButton({
       disabled={disabled}
       onClick={onClick}
       className={cn(
-        "text-icon-default flex size-8 items-center justify-center rounded-full transition-colors",
-        "hover:bg-btn-icon-hover focus-visible:ring-border-03 focus-visible:ring-2 focus-visible:outline-none",
+        "text-icon-subtle flex size-8 items-center justify-center rounded-full transition-colors",
+        "hover:bg-btn-icon-hover focus-visible:ring-border-02 focus-visible:ring-2 focus-visible:outline-none",
         "disabled:text-icon-disabled disabled:pointer-events-none",
         active && "bg-btn-icon-hover text-icon-active",
       )}
@@ -135,8 +136,7 @@ function MapDrawToolbar({
       <div
         role="toolbar"
         aria-label="Drawing tools"
-        // Same height as <MapControls> (h-9), so the two line up along the bottom.
-        className="bg-surface-base-01 pointer-events-auto flex h-9 items-center gap-1 rounded-full px-0.5"
+        className="bg-surface-base-01 pointer-events-auto border border-border-01 flex h-9.5 items-center gap-1 rounded-full px-0.5 shadow-4"
       >
         {tools.map((tool) => (
           <ToolbarButton
@@ -145,7 +145,6 @@ function MapDrawToolbar({
             icon={TOOLS[tool].icon}
             active={draw.mode === tool}
             disabled={disabled}
-            // Clicking the active tool again puts it down.
             onClick={() =>
               draw.mode === tool ? draw.cancel() : draw.start(tool)
             }
@@ -166,11 +165,13 @@ function MapDrawToolbar({
         />
       </div>
       {showHint && hint && (
+        // Same surface as the toolbar, so it stays legible on light, dark and satellite tiles.
         <p
           role="status"
-          className="bg-foreground/85 text-background max-w-80 rounded-md px-2.5 py-1.5 text-center text-xs text-balance shadow-md"
+          className="bg-surface-base-01 border-border-01 text-foreground shadow-4 flex max-w-80 items-start gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs text-pretty"
         >
-          {hint}
+          <Info aria-hidden className="text-icon-subtle mt-px size-3.5 shrink-0" />
+          <span>{hint}</span>
         </p>
       )}
     </div>

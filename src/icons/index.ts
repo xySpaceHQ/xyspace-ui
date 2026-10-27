@@ -10,6 +10,7 @@ import Globepin from "./GlobePin";
 import X from "./X";
 import SidebarSimple from "./SidebarSimple";
 import Ellipse from "./Ellipse";
+import Info from "./Info";
 import Rows from "./Rows";
 import SquaresFour from "./SquareFour";
 import CaretDown from "./CaretDown";
@@ -114,4 +115,5 @@ export {
   ArrowCircleUp,
   SelectionPlus,
   Ruler,
+  Info,
 };
